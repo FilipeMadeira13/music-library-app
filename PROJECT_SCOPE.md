@@ -47,3 +47,9 @@ Antes da publicação, definir orçamento e hospedagem entre as opções propost
 - Validar os fluxos do MVP em navegador de PC e de celular, sem rolagem horizontal da página, conteúdo cortado ou ações dependentes apenas de passar o mouse; confirmar acesso à mesma biblioteca pelo celular na rede local configurada.
 - Validar ausência de capa, falha ou limite da API, ausência de links e biblioteca vazia.
 - Confirmar persistência após reiniciar a aplicação e recuperação por backup.
+
+## Estado das decisões para implementação
+
+Em 14/10/2026, por delegação do usuário, foram aprovadas a arquitetura, as decisões técnicas T, os ADRs e as resoluções P-01–09 descritas em [REQUIREMENTS.md](REQUIREMENTS.md#10-resolução-das-pendências--aprovada-em-14102026) e [ARCHITECTURE.md](ARCHITECTURE.md#11-resoluções-aprovadas-das-pendências-dos-requisitos). O MVP local está pronto para implementação, preservando este escopo.
+
+Adotam-se diferenciação manual de homônimos, datas parciais com original e edição separados, capas somente por URL, limites e pesquisa definidos, integrações com orçamento de recursos, protocolo de aceitação e backup manual. Contato real para o catálogo, ambiente de teste com celular real e destino de backup serão preenchidos antes das respectivas atividades. A aprovação não declara metas verificadas nem inclui publicação na internet.

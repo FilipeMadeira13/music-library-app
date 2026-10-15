@@ -1,7 +1,7 @@
 # Especificação de requisitos — biblioteca pessoal de álbuns
 
 **Data:** 14/10/2026<br>
-**Estado:** proposta para aprovação; nenhuma implementação autorizada.  
+**Estado:** requisitos e decisões T/P aprovados em 14/10/2026, por delegação do usuário; prontos para implementação do MVP local.<br>
 **Fonte principal:** [PROJECT_SCOPE.md](PROJECT_SCOPE.md).  
 **Complementos:** esclarecimentos do usuário nesta conversa, registrados abaixo.
 
@@ -20,10 +20,10 @@ Não fazem parte do MVP: publicação, PostgreSQL, autenticação para serviço 
 - **E — Escopo:** requisito explicitamente previsto no escopo aprovado.
 - **U — Usuário:** decisão esclarecida nesta conversa.
 - **D — Derivado:** condição necessária para consistência ou verificação de um requisito E/U, sem criar nova funcionalidade de negócio.
-- **T — Proposta técnica:** proteção ou convenção recomendada para o MVP, sujeita à aprovação deste documento.
-- **P — Pendente:** questão não decidida; alternativas e números não devem ser tratados como requisitos aprovados.
+- **T — Decisão técnica:** proteção ou convenção aprovada para o MVP em 14/10/2026.
+- **P — Pendência original resolvida:** os IDs P-01–09 são preservados para rastreabilidade; suas decisões aprovadas constam na seção 10.
 
-Os critérios de aceitação descrevem o comportamento que deverá ser verificado quando houver implementação. Requisitos T ainda são propostas. Critérios relacionados a P só podem ser concluídos depois da definição indicada na seção 10.
+Os critérios de aceitação descrevem o comportamento que deverá ser verificado quando houver implementação. As decisões T e as resoluções P-01–09 estão aprovadas pela delegação do usuário em 14/10/2026. Referências a P remetem à seção 10, e não a decisões de produto em aberto. Contato de integração, ambiente real de medição e destino de backup são dados operacionais a preencher nos momentos indicados; não bloqueiam a implementação.
 
 ### 1.2 Esclarecimentos incorporados
 
@@ -34,11 +34,11 @@ Os critérios de aceitação descrevem o comportamento que deverá ser verificad
 | DEC-03 | U | Na troca de edição, o usuário revisa os dados antes de salvar e os links de streaming existentes são preservados. |
 | DEC-04 | U/T | O usuário delegou a escolha da forma de informar capas manuais. Adota-se URL de imagem opcional, junto da obtenção automática e da imagem padrão; upload de arquivo fica fora deste MVP. |
 | DEC-05 | U | O aplicativo deve ser acessível tanto em PC quanto em dispositivos móveis, pelo navegador, com interface responsiva e funcionalidades equivalentes. |
-| DEC-06 | U | Álbuns distintos com título e artistas equivalentes são diferenciados pela data do lançamento original; datas de edições posteriores não criam novos álbuns. Precisão insuficiente ou datas coincidentes permanecem em P-01/P-03. |
+| DEC-06 | U | Álbuns distintos com título e artistas equivalentes são diferenciados pela data do lançamento original; datas de edições posteriores não criam novos álbuns. Precisão insuficiente ou datas coincidentes seguem P-01/P-03 aprovadas na seção 10. |
 | DEC-07 | U/D | Comparações de nomes e títulos ignoram caixa, acentos e espaços conforme a seção 2.1; a grafia original é preservada para exibição. Equivalência textual não comprova identidade de artistas homônimos. |
-| DEC-08 | U | A lista de artistas inclui somente artistas com pelo menos um álbum associado. Retenção ou exclusão dos registros sem álbuns permanece em P-02. |
-| DEC-09 | U | O ano principal é o do lançamento original, não o da edição escolhida. Armazenar separadamente o ano/data da edição é uma proposta, pendente em P-03. |
-| DEC-10 | U | Anos de lançamento posteriores ao ano corrente não são aceitos, seja em entrada manual ou externa. Restrições a mês/dia futuros dentro do ano corrente permanecem em P-03. |
+| DEC-08 | U | A lista de artistas inclui somente artistas com pelo menos um álbum associado. Registros sem álbuns são mantidos e ocultos da lista, conforme P-02. |
+| DEC-09 | U | O ano principal é o do lançamento original, não o da edição escolhida. Armazenar separadamente o ano/data opcional da edição, conforme P-03. |
+| DEC-10 | U | Anos de lançamento posteriores ao ano corrente não são aceitos, seja em entrada manual ou externa. Rejeitar também mês/dia conhecido futuro, conforme P-03. |
 | DEC-11 | U | Uma capa manual definida tem prioridade sobre a automática, inclusive na revisão de troca de edição. Falha de carregamento não autoriza sobrescrever a escolha manual. |
 
 ## 2. Dados, entradas, saídas e restrições
@@ -51,9 +51,9 @@ Este é um modelo conceitual, não uma decisão sobre tabelas ou detalhes de imp
 | Título | Texto manual ou sugerido pelo MusicBrainz | Listagens, detalhes, busca e aviso de duplicado | Obrigatório (E); rejeitar valor vazio ou composto somente por espaços (D). Limite de tamanho: P-04. |
 | Artistas do álbum | Um ou mais artistas selecionados/informados | Associação do mesmo álbum às páginas dos artistas e à busca | Pelo menos um obrigatório (E); nomes não podem ser vazios (D). Comparação textual: seção 2.1; identidade de homônimos: P-02. |
 | Ano principal / data do lançamento original | Valor manual ou sugestão externa identificada como lançamento original | Exibição do ano principal e diferenciação de álbuns homônimos | Opcional (E); ano não posterior ao corrente (U). Não inferir o original a partir da data de uma reedição, nem converter ausência em zero (D). Precisão, formato e limite inferior: P-03; ambiguidade: P-01. |
-| Ano/data da edição escolhida (proposta T/P-03) | Valor manual ou data da edição externa selecionada | Contextualizar a edição e apoiar sua revisão, sem alterar a identidade do álbum | Armazenamento separado e opcional recomendado, ainda não aprovado; se adotado, sujeito à mesma proibição de ano futuro. Não substitui a data original. |
+| Ano/data da edição escolhida (T/P-03 aprovada) | Valor manual ou data da edição externa selecionada | Contextualizar a edição e apoiar sua revisão, sem alterar a identidade do álbum | Armazenamento separado e opcional aprovado; sujeito às regras de datas de P-03. Não substitui a data original. |
 | Edição externa | Resultado escolhido do MusicBrainz e identificação compatível | Proveniência e consulta de capa; troca de edição | Opcional no cadastro manual (D); não associar automaticamente uma edição a partir apenas de título/artista (E/D). |
-| Capa | Resultado do Cover Art Archive ou URL manual | Imagem do álbum ou imagem padrão | Opcional (E/U); URL HTTP/HTTPS válida como proposta T; manual tem prioridade sobre automática (U); ausência ou falha da imagem exige alternativa visual conforme RF-04. |
+| Capa | Resultado do Cover Art Archive ou URL manual | Imagem do álbum ou imagem padrão | Opcional (E/U); URL HTTP/HTTPS válida conforme T aprovada; manual tem prioridade sobre automática (U); ausência ou falha da imagem exige alternativa visual conforme RF-04. |
 | Spotify | URL preenchida manualmente | Ação para abrir o destino externo | Opcional (E); protocolo seguro: T; restrição ao domínio Spotify: P-04. |
 | Links adicionais | Pares de nome da plataforma e URL | Ações externas identificadas pelo nome | O conjunto pode ser vazio (E); cada item informado exige nome e URL completos (D). Quantidade e nomes repetidos: P-04. |
 | Consulta à coleção | Texto de título ou artista | Álbuns locais correspondentes, ou estado sem resultados | Não altera registros; normalização: seção 2.1; tipo de correspondência e consulta vazia: P-05. |
@@ -68,19 +68,19 @@ Nomes e títulos com caracteres Unicode e pontuação devem ser preservados na a
 
 Para comparar títulos e nomes de artistas na coleção local, produzir uma chave separada do texto de exibição: decompor Unicode em NFD, aplicar case folding Unicode (comparação sem distinção de caixa), decompor novamente em NFD, remover marcas combinantes de acentuação e remover todos os caracteres de espaço em branco Unicode, inclusive tabulações e quebras de linha. Assim, `ÁGUA`, `agua` e ` A gua ` são equivalentes. Pontuação e demais caracteres não são removidos; não há transliteração nem equivalência automática entre apelidos, traduções ou nomes artísticos diferentes.
 
-A remoção de espaços vale também entre palavras: `A B` e `AB` têm a mesma chave. Colisões de normalização exigem revisão; não autorizam fundir artistas ou álbuns. O valor informado/revisado permanece separado para exibição, sem ser substituído pela chave. Um valor cuja chave fique vazia é inválido. A mesma normalização vale para a consulta local e seus campos comparados; correspondência parcial, consulta vazia e ordenação continuam em P-05. A forma de consultar o catálogo externo não é determinada por essa chave.
+A remoção de espaços vale também entre palavras: `A B` e `AB` têm a mesma chave. Colisões de normalização exigem revisão; não autorizam fundir artistas ou álbuns. O valor informado/revisado permanece separado para exibição, sem ser substituído pela chave. Um valor cuja chave fique vazia é inválido. A mesma normalização vale para a consulta local e seus campos comparados; correspondência parcial, consulta vazia e ordenação seguem P-05 aprovada. A forma de consultar o catálogo externo não é determinada por essa chave.
 
 ### 2.2 Lançamento original, edição e identificação (U/D)
 
 O álbum conceitual mantém um identificador local e uma edição escolhida. A data usada para diferenciar álbuns distintos com título e artistas equivalentes é a do **lançamento original de cada álbum**, não a data de cada edição. Um álbum originalmente lançado em 1990 e sua reedição de 2020 continuam sendo um álbum; outro álbum de mesmo título e artistas, originalmente lançado em 2005, pode ter registro próprio. Trocar a edição não altera por si só a data original nem cria um registro.
 
-Comparar títulos pela seção 2.1 e conjuntos de identidades de artistas sem considerar a ordem. Nomes equivalentes ajudam a localizar candidatos, mas a distinção de artistas homônimos depende de P-02. Comprovado que se trata de álbuns distintos, datas originais diferentes permitem distingui-los; diferença na data de edição não basta. Mesma data original também não prova que se trata do mesmo álbum.
+Comparar títulos pela seção 2.1 e conjuntos de identidades de artistas sem considerar a ordem. Nomes equivalentes ajudam a localizar candidatos, mas a distinção de artistas homônimos segue a decisão aprovada em P-02. Comprovado que se trata de álbuns distintos, datas originais diferentes permitem distingui-los; diferença na data de edição não basta. Mesma data original também não prova que se trata do mesmo álbum.
 
-Ano/data original continua opcional: ausência ou precisão insuficiente não pode ser preenchida com uma data inventada ou com a data da edição. Nesses casos, o aviso de possível duplicado e a revisão continuam aplicáveis; a resolução da ambiguidade entre homônimos depende de P-01/P-03. Não estabelecer unicidade rígida apenas por nome/título/data antes dessas definições.
+Ano/data original continua opcional: ausência ou precisão insuficiente não pode ser preenchida com uma data inventada ou com a data da edição. Nesses casos, o aviso de possível duplicado e a revisão continuam aplicáveis; a resolução da ambiguidade entre homônimos segue a decisão aprovada em P-01/P-03. Não estabelecer unicidade rígida apenas por nome/título/data.
 
 ### 2.3 Validação temporal já definida (U/D)
 
-Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao ano corrente na data da gravação, segundo a data local configurada da aplicação. A regra se aplica ao lançamento original e, se aprovado seu armazenamento, à edição escolhida, no cadastro, edição e troca de edição, inclusive para sugestões externas. Um ano futuro exige correção ou remoção do campo opcional antes de salvar; não deve ser aceito silenciosamente. Ausência é distinta de zero. Formato de entrada, limite inferior, suporte a mês/dia e rejeição de datas futuras dentro do ano corrente dependem de P-03.
+Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao ano corrente na data da gravação, segundo a data local configurada da aplicação. A regra se aplica ao lançamento original e à edição escolhida, no cadastro, edição e troca de edição, inclusive para sugestões externas. Um ano futuro exige correção ou remoção do campo opcional antes de salvar; não deve ser aceito silenciosamente. Ausência é distinta de zero. Formato de entrada, limite inferior, suporte a mês/dia e rejeição de datas futuras dentro do ano corrente seguem P-03 aprovada.
 
 ## 3. Requisitos funcionais e critérios de aceitação
 
@@ -111,13 +111,13 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 - CA-02.2: com resposta vazia, informar ausência de resultados e disponibilizar cadastro manual.
 - CA-02.3: com falha, limite, demora excedida ou resposta inválida, informar que a consulta não foi concluída e permitir cadastro manual.
 - CA-02.4: observar a comunicação de rede e confirmar que consultas de catálogo passam pelo servidor Django.
-- CA-02.5: repetir consulta dentro da janela configurada de cache e verificar reaproveitamento sem nova chamada externa; janela depende de P-06.
+- CA-02.5: repetir consulta dentro da janela configurada de cache e verificar reaproveitamento sem nova chamada externa; janela segue a decisão aprovada em P-06.
 
 ### RF-03 — Escolher edição, revisar e salvar dados importados (E/U)
 
 **Entrada:** resultado selecionado e valores revisados. **Saída:** um registro local correspondente à edição escolhida.
 
-**Comportamento:** não escolher nem combinar edições automaticamente. Exibir os dados disponíveis para revisão; permitir correção manual. Informação externa incompleta não elimina a validação de título/artistas ou de anos informados. Distinguir a data original da data da edição; se o original for desconhecido, mantê-lo ausente em vez de copiar a data da reedição. A apresentação deve permitir distinguir as edições com os dados que o catálogo fornecer (D); conjunto exato de campos depende de P-01.
+**Comportamento:** não escolher nem combinar edições automaticamente. Exibir os dados disponíveis para revisão; permitir correção manual. Informação externa incompleta não elimina a validação de título/artistas ou de anos informados. Distinguir a data original da data da edição; se o original for desconhecido, mantê-lo ausente em vez de copiar a data da reedição. A apresentação deve permitir distinguir as edições com os dados que o catálogo fornecer (D); conjunto exato de campos segue a decisão aprovada em P-01.
 
 **Aceitação:**
 
@@ -131,7 +131,7 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 
 **Entrada:** identificação externa compatível ou URL manual opcional. **Saída:** capa disponível ou imagem padrão.
 
-**Comportamento:** consultar o Cover Art Archive quando houver identificação compatível. Falha ou ausência de capa não impede salvar nem consultar o álbum. Permitir informar, substituir ou remover a URL manual. Quando houver capa manual definida, ela tem prioridade sobre a automática e não é sobrescrita por novas consultas ou troca de edição. Sem manual, usar automática disponível; sem ambas, imagem padrão. Se a manual falhar, exibir imagem padrão sem remover a URL nem substituí-la silenciosamente pela automática. Remover explicitamente a manual permite voltar à automática ou, na ausência desta, à padrão. Retenção das imagens permanece em P-07.
+**Comportamento:** consultar o Cover Art Archive quando houver identificação compatível. Falha ou ausência de capa não impede salvar nem consultar o álbum. Permitir informar, substituir ou remover a URL manual. Quando houver capa manual definida, ela tem prioridade sobre a automática e não é sobrescrita por novas consultas ou troca de edição. Sem manual, usar automática disponível; sem ambas, imagem padrão. Se a manual falhar, exibir imagem padrão sem remover a URL nem substituí-la silenciosamente pela automática. Remover explicitamente a manual permite voltar à automática ou, na ausência desta, à padrão. Armazenar somente URLs, conforme P-07.
 
 **Aceitação:**
 
@@ -159,7 +159,7 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 
 **Entrada:** acesso à organização por artista e escolha de um artista. **Saída:** artistas da coleção e álbuns associados ao escolhido.
 
-**Comportamento:** um álbum colaborativo pertence a cada artista associado, mantendo um único registro. Listar somente artistas com pelo menos um álbum associado, inclusive após edição ou remoção do último vínculo. Aplicar a normalização da seção 2.1; homônimos e retenção/exclusão de registros sem álbuns permanecem em P-02. A ausência na lista não implica exclusão física; acessos diretos e sorteios devem continuar tratando conjunto vazio ou identificador inexistente conforme RF-14–15.
+**Comportamento:** um álbum colaborativo pertence a cada artista associado, mantendo um único registro. Listar somente artistas com pelo menos um álbum associado, inclusive após edição ou remoção do último vínculo. Aplicar a normalização da seção 2.1; homônimos e retenção de registros sem álbuns seguem P-02 aprovada. A ausência na lista não implica exclusão física; acessos diretos e sorteios devem continuar tratando conjunto vazio ou identificador inexistente conforme RF-14–15.
 
 **Aceitação:**
 
@@ -172,7 +172,7 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 
 **Entrada:** texto de título ou artista. **Saída:** álbuns correspondentes ou aviso de ausência de resultados.
 
-**Comportamento:** pesquisar dados persistidos sem depender de catálogos. Um álbum associado a vários artistas deve aparecer uma única vez no resultado (D). Normalizar consulta, nomes e títulos conforme seção 2.1. Tipo de correspondência e demais detalhes dependem de P-05.
+**Comportamento:** pesquisar dados persistidos sem depender de catálogos. Um álbum associado a vários artistas deve aparecer uma única vez no resultado (D). Normalizar consulta, nomes e títulos conforme seção 2.1. Tipo de correspondência e demais detalhes seguem as decisões aprovadas em P-05.
 
 **Aceitação:**
 
@@ -200,7 +200,7 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 
 **Entrada:** álbum existente, nova edição escolhida e dados revisados. **Saída:** mesmo registro local associado à nova edição.
 
-**Comportamento:** possibilitar busca/seleção de outra edição e revisão dos valores de título, artistas, data original e capa antes de salvar; se aprovado em P-03, revisar separadamente a data da edição. Não substituir o ano original pelo da nova edição. Conservar a capa manual enquanto o usuário não a substituir ou remover explicitamente. Preservar os links de streaming existentes durante essa troca. A troca não cria um segundo registro do mesmo álbum nem sobrescreve silenciosamente dados revisados.
+**Comportamento:** possibilitar busca/seleção de outra edição e revisão dos valores de título, artistas, data original e capa antes de salvar; revisar separadamente a data da edição, conforme P-03. Não substituir o ano original pelo da nova edição. Conservar a capa manual enquanto o usuário não a substituir ou remover explicitamente. Preservar os links de streaming existentes durante essa troca. A troca não cria um segundo registro do mesmo álbum nem sobrescreve silenciosamente dados revisados.
 
 **Aceitação:**
 
@@ -215,7 +215,7 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 
 **Entrada:** tentativa de salvar título equivalente e o mesmo conjunto de artistas de registro existente, considerando a data original conforme seção 2.2. **Saída:** aviso e acesso à revisão do registro existente.
 
-**Comportamento:** manter um registro por álbum. A ordem dos artistas não muda o conjunto. Não combinar registros automaticamente. O usuário decide qual edição manter por revisão do registro existente, com troca conforme RF-09 quando aplicável. Aplicar a normalização da seção 2.1 e a distinção pela data original da seção 2.2. Coincidência de título/artistas gera candidato à revisão, não bloqueio absoluto: álbuns comprovadamente distintos com datas originais diferentes podem coexistir. Edições posteriores do mesmo álbum continuam em um único registro. Datas ausentes, parciais ou coincidentes e homônimos não resolvidos permanecem em P-01/P-02/P-03; não os tratar como iguais ou distintos automaticamente.
+**Comportamento:** manter um registro por álbum. A ordem dos artistas não muda o conjunto. Não combinar registros automaticamente. O usuário decide qual edição manter por revisão do registro existente, com troca conforme RF-09 quando aplicável. Aplicar a normalização da seção 2.1 e a distinção pela data original da seção 2.2. Coincidência de título/artistas gera candidato à revisão, não bloqueio absoluto: álbuns comprovadamente distintos com datas originais diferentes podem coexistir. Edições posteriores do mesmo álbum continuam em um único registro. Datas ausentes, parciais ou coincidentes e homônimos seguem P-01/P-02/P-03 aprovadas; não os tratar como iguais ou distintos automaticamente.
 
 **Aceitação:**
 
@@ -226,13 +226,13 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 - CA-10.5: título igual e conjunto de artistas diferente não deve, por esse motivo isolado, ser considerado o mesmo álbum.
 - CA-10.6: variar caixa, acentos e espaços do título e dos nomes dos mesmos artistas; identificar o mesmo candidato, preservando a grafia de exibição.
 - CA-10.7: cadastrar dois álbuns realmente distintos de título/artistas equivalentes com datas originais conhecidas e diferentes (1990 e 2005); permitir registros distintos identificados por essas datas. Tentar cadastrar a reedição de 2020 do primeiro; revisar seu registro de 1990, sem criar terceiro álbum.
-- CA-10.8 (condicionado a P-01/P-03): definir e verificar a resolução de colisões com data ausente, parcial ou coincidente antes de concluir o fluxo desses casos.
+- CA-10.8–9: verificar colisões com data ausente, parcial ou coincidente conforme seção 10.3.
 
 ### RF-11 — Remover álbum com confirmação (E)
 
 **Entrada:** álbum e confirmação explícita. **Saída:** remoção persistida ou cancelamento.
 
-**Comportamento:** identificar o álbum na confirmação. Remover suas associações e links da coleção; preservar os demais álbuns. Artistas que ficarem sem álbuns deixam de aparecer na lista (U); retenção ou exclusão física desses registros depende de P-02. Não se exige lixeira ou recuperação individual.
+**Comportamento:** identificar o álbum na confirmação. Remover suas associações e links da coleção; preservar os demais álbuns. Artistas que ficarem sem álbuns deixam de aparecer na lista (U); manter esses registros para reutilização, conforme P-02. Não se exige lixeira ou recuperação individual.
 
 **Aceitação:**
 
@@ -296,12 +296,12 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 
 **Entrada:** dados confirmados, reinício da aplicação e execução das instruções de backup/restauração. **Saída:** coleção íntegra e recuperável.
 
-**Comportamento:** documentar como criar uma cópia consistente do SQLite, onde guardá-la e como restaurá-la. Informar quais arquivos são necessários além do banco, se houver. Backups não exigem botão na interface, agendamento nem nuvem. Frequência e retenção não estão definidas (P-09).
+**Comportamento:** documentar como criar uma cópia consistente do SQLite, onde guardá-la e como restaurá-la. Informar quais arquivos são necessários além do banco, se houver. Backups não exigem botão na interface, agendamento nem nuvem. Adotar backup manual sem limpeza automática, com frequência e retenção sob responsabilidade do proprietário (P-09).
 
 **Aceitação:**
 
 - CA-16.1: salvar álbuns, artistas, edição e links; reiniciar e verificar todos os valores e associações.
-- CA-16.2: criar cópia seguindo as instruções; restaurar em ambiente local de teste separado e verificar contagens, grafias originais, identidades de artistas, vínculos, datas originais e sua precisão (se aprovada), edições e URLs de capas manuais/automáticas e streaming; incluir datas da edição se seu armazenamento for aprovado.
+- CA-16.2: criar cópia seguindo as instruções; restaurar em ambiente local de teste separado e verificar contagens, grafias originais, identidades de artistas, vínculos, datas originais e sua precisão, edições e URLs de capas manuais/automáticas e streaming; incluir datas da edição e sua precisão.
 - CA-16.3: verificar consulta e sorteio da coleção restaurada com APIs indisponíveis.
 - CA-16.4: testar cópia ausente, inválida ou incompatível; informar falha e preservar a biblioteca atual antes de qualquer substituição destrutiva (T).
 - CA-16.5: se a capa for apenas referência externa, a documentação explica que backup preserva a referência e que a imagem pode ficar indisponível.
@@ -349,20 +349,20 @@ Qualquer ano de lançamento informado deve ser um ano inteiro, não posterior ao
 - Controlar consultas no servidor e reaproveitar consultas recentes. O limite do escopo é, em média, uma requisição por segundo.
 - A [documentação oficial de limites do MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting), consultada em 13/10/2026, informa limite médio por IP e rejeição com HTTP 503 quando excedido; também exige User-Agent que identifique a aplicação e permita contato com o responsável.
 - O controle deve abranger todas as chamadas do aplicativo ao MusicBrainz, incluindo pesquisa e obtenção de detalhes; cliques concorrentes não podem multiplicar a taxa permitida (D/T).
-- Timeout finito, cache, eventual retry e limites de tamanho da resposta devem ser configurados. Seus valores estão pendentes em P-06. Não criar repetição ilimitada nem disparar novamente em laço após falha (T).
+- Timeout finito, cache, eventual retry e limites de tamanho da resposta devem ser configurados. Adotar os valores aprovados em P-06 e na seção 7 da arquitetura. Não criar repetição ilimitada nem disparar novamente em laço após falha (T).
 - Não interpretar HTTP 503 como ausência de resultados. Uma falha global do serviço também pode produzir esse status.
 
 **Verificação:** inspecionar requisições e User-Agent; executar consultas concorrentes e observar controle de frequência; simular 503 e resposta inválida; verificar estado de falha e opção manual; repetir consulta dentro da validade do cache e verificar ausência de nova chamada.
 
 ### INT-02 — Cover Art Archive (E)
 
-Consultar quando houver identificação compatível; tratar capa como enriquecimento opcional. Sua indisponibilidade não deve impedir nenhuma operação essencial da coleção. O limite do MusicBrainz não deve ser atribuído automaticamente ao Cover Art Archive. Identificação compatível, estratégia de obtenção, limites específicos e retenção de capas dependem de P-01/P-06/P-07.
+Consultar quando houver identificação compatível; tratar capa como enriquecimento opcional. Sua indisponibilidade não deve impedir nenhuma operação essencial da coleção. O limite do MusicBrainz não deve ser atribuído automaticamente ao Cover Art Archive. Identificação compatível, estratégia de obtenção, limites específicos e retenção de capas seguem as decisões aprovadas em P-01/P-06/P-07.
 
 **Verificação:** simular capa encontrada, não encontrada, timeout e resposta inválida; verificar capa ou alternativa visual e ausência de bloqueio do cadastro.
 
 ## 7. Segurança aplicável ao MVP local
 
-As medidas abaixo são propostas técnicas T, sem ampliar o produto para autenticação ou múltiplos usuários. O uso local pressupõe proteção pelo sistema operacional e, quando habilitado acesso pelo celular, uma rede local confiável; ele não oferece separação de usuários dentro do aplicativo.
+As medidas abaixo são decisões técnicas T aprovadas, sem ampliar o produto para autenticação ou múltiplos usuários. O uso local pressupõe proteção pelo sistema operacional e, quando habilitado acesso pelo celular, uma rede local confiável; ele não oferece separação de usuários dentro do aplicativo.
 
 | ID | Requisito técnico | Critério verificável |
 | --- | --- | --- |
@@ -375,7 +375,7 @@ As medidas abaixo são propostas técnicas T, sem ampliar o produto para autenti
 | SEG-07 | Abrir links externos sem permitir acesso indevido à janela de origem, quando usada nova aba. | Verificar proteção de opener nas ações externas que abrem nova aba. |
 | SEG-08 | Não expor segredos, banco local, backups, dados de configuração ou traceback nas páginas. | Verificar respostas de erro e ausência de banco/backups em diretórios servidos como arquivos públicos. |
 | SEG-09 | Documentar proteção de arquivos de biblioteca e backup pelo sistema operacional. | Instruções identificam arquivos sensíveis, acesso local e local de armazenamento; não exigem nuvem nem serviço externo. |
-| SEG-10 | Definir limites de campos, resposta externa e espera para evitar consumo ilimitado de recursos. | Entradas acima dos limites acordados e respostas excessivas geram falha controlada; números dependem de P-04/P-06. |
+| SEG-10 | Definir limites de campos, resposta externa e espera para evitar consumo ilimitado de recursos. | Entradas acima dos limites acordados e respostas excessivas geram falha controlada; números seguem as decisões aprovadas em P-04/P-06. |
 
 Capas carregadas por URL e links de streaming dependem de terceiros. A estratégia escolhida para imagens deve ser documentada, inclusive eventual envio de requisições do navegador ao provedor. Não se exige proxy de imagens, varredura de links, criptografia de backup nem autenticação no MVP local.
 
@@ -384,7 +384,7 @@ Capas carregadas por URL e links de streaming dependem de terceiros. A estratég
 | Situação | Resposta esperada | Estado que deve ser preservado | Verificação |
 | --- | --- | --- | --- |
 | Título vazio, artistas ausentes ou item de link incompleto | Erro junto ao campo, com instrução de correção. | Nenhuma gravação parcial; valores válidos preenchidos quando possível. | RF-01, RF-08, RNF-06–07. |
-| Ano ou URL inválidos | Recusar valor e identificar campo; ano futuro é inválido conforme seção 2.3. Precisão e demais regras de data dependem de P-03. | Registro anterior na edição. | Seção 2, SEG-04. |
+| Ano ou URL inválidos | Recusar valor e identificar campo; ano futuro é inválido conforme seção 2.3. Precisão e demais regras de data seguem P-03 aprovada. | Registro anterior na edição. | Seção 2, SEG-04. |
 | Possível duplicado | Aviso e acesso à revisão do existente; nenhuma fusão automática. | Registro existente e escolha do usuário. | RF-10. |
 | MusicBrainz sem resultados | Explicar que a busca terminou sem encontrar resultados; permitir cadastro manual. | Coleção e dados do formulário. | CA-02.2. |
 | Timeout, falha de rede, 503 ou outro erro de catálogo | Indicar indisponibilidade/consulta não concluída, permitir nova tentativa controlada e cadastro manual. | Coleção existente. | CA-02.3, INT-01. |
@@ -395,7 +395,7 @@ Capas carregadas por URL e links de streaming dependem de terceiros. A estratég
 | Álbum/artista inexistente ou removido | Estado de registro não encontrado e navegação de retorno. | Demais registros. | CA-05.4, CA-11.4, CA-14.4. |
 | Biblioteca/conjunto vazio | Orientação contextual, sem erro interno ou resultado fora do conjunto. | Coleção atual. | RF-15. |
 | Falha de persistência, banco bloqueado ou armazenamento sem espaço | Informar que não foi possível concluir; não mostrar sucesso antes da confirmação de gravação. | Estado anterior íntegro. | RNF-06–07. |
-| Clique duplo/reenvio ou duas gravações concorrentes | Aplicar validação de duplicado também na gravação; evitar estado parcial. | Regra de um registro por álbum. | RF-10, RNF-06; normalização conforme seção 2.1; identidade ambígua depende de P-01/P-02/P-03. |
+| Clique duplo/reenvio ou duas gravações concorrentes | Aplicar validação de duplicado também na gravação; evitar estado parcial. | Regra de um registro por álbum. | RF-10, RNF-06; normalização conforme seção 2.1; identidade ambígua segue P-01/P-02/P-03 aprovadas. |
 | Backup inválido ou restauração interrompida | Informar falha; procedimento deve preservar cópia recuperável da biblioteca anterior. | Dados atuais ou cópia consistente para recuperação. | CA-16.4. |
 
 Não exigir código HTTP específico para erros de formulário sem escolher o fluxo técnico. Rejeições de segurança e registros não encontrados precisam ser distinguíveis de sucesso e de erro interno nos testes.
@@ -411,10 +411,10 @@ Não exigir código HTTP específico para erros de formulário sem escolher o fl
 | Mesmo título/artistas com diferentes edições | Edições do mesmo álbum ficam no registro único; álbuns distintos são diferenciados pela data original. Datas insuficientes/coincidentes: P-01/P-03. |
 | Artistas em ordem diferente | Mesmo conjunto para aviso de duplicado. |
 | Nomes/títulos com acentos, caixa diferente ou espaços | Comparação equivalente pela seção 2.1, preservando a grafia original na exibição; sem fusão automática. |
-| Artistas homônimos, inclusive com mesmo ano de formação ou sem esse dado | Ano isolado não garante identidade; solução proposta na seção 10.1, pendente em P-02. |
-| Data original ausente/parcial ou igual em álbuns homônimos | Não inventar componentes nem presumir identidade; resolução pendente em P-01/P-03. |
+| Artistas homônimos, inclusive com mesmo ano de formação ou sem esse dado | Ano isolado não garante identidade; solução aprovada na seção 10.1/P-02. |
+| Data original ausente/parcial ou igual em álbuns homônimos | Não inventar componentes nem presumir identidade; resolução aprovada em P-01/P-03. |
 | Ano de lançamento futuro em entrada manual ou externa | Recusar o valor; corrigir ou remover campo opcional antes de salvar. |
-| Mesmo artista informado duas vezes | Não ampliar peso do álbum nem duplicar linha; escolha entre deduplicar ou rejeitar o campo: P-02. |
+| Mesmo artista informado duas vezes | Não ampliar peso do álbum nem duplicar linha; deduplicar o mesmo ID com indicação ao usuário: P-02. |
 | Dados externos faltantes | Revisão permite completar; não salvar sem obrigatórios. |
 | Troca de edição com capa diferente/ausente | Revisão antes da gravação; links e prioridade da capa manual preservados. Remoção/substituição manual exige ação explícita; retenção de imagens: P-07. |
 | Exclusão do último álbum de um artista | Artista sai da lista; nenhum álbum elegível para seu sorteio. Retenção/exclusão do registro: P-02. |
@@ -429,52 +429,55 @@ Não exigir código HTTP específico para erros de formulário sem escolher o fl
 | Tela estreita, orientação retrato/paisagem e interação por toque | Conteúdo legível e controles utilizáveis, sem ações exclusivas de hover; navegadores e viewports de teste: P-08. |
 | Celular sem acesso à rede local ou servidor desligado | A aplicação local não fica disponível; a documentação de acesso explica essas condições. |
 
-## 10. Contradições potenciais, ambiguidades e lacunas
+## 10. Resolução das pendências — aprovada em 14/10/2026
 
-As decisões DEC-01–11 resolvem a referência ao lançamento original, normalização textual, visibilidade de artistas sem álbuns, proibição de anos futuros e prioridade da capa manual, além dos esclarecimentos anteriores. As pendências abaixo abrangem somente aspectos ainda não decididos. As avaliações nas seções 10.1–10.3 são recomendações, não decisões aprovadas.
+O usuário delegou a aprovação das pendências necessárias. Foram adotadas as recomendações da seção 11 de [ARCHITECTURE.md](ARCHITECTURE.md), incluindo as propostas técnicas T e os ADRs. P-01–09 passam a identificar decisões resolvidas. A coluna de alternativas registra os motivos das escolhas e não autoriza implementações alternativas.
 
-| ID | Tipo | Questão ainda aberta e impacto | Pergunta para decisão |
-| --- | --- | --- | --- |
-| P-01 | Identificação residual | A data original diferencia álbuns distintos, mas pode faltar, ter pouca precisão ou coincidir. Datas de reedição não resolvem essa ambiguidade. | Como confirmar e registrar álbuns distintos nesses casos: identificador externo do álbum, nota de desambiguação ou outro dado revisado? Quais campos de edição (país, formato, gravadora etc.) apresentar? Ver seções 10.2–10.3. |
-| P-02 | Identidade de artistas e retenção | Normalização e ocultação de artistas sem álbuns estão decididas. Falta distinguir homônimos, tratar repetição do mesmo artista no formulário e definir retenção dos registros sem vínculos. | Aprovar a proposta da seção 10.1, incluindo diferenciação manual sem ano de formação? Deduplicar ou rejeitar artista repetido? Manter ou excluir registros sem álbuns e qual resposta dar ao acesso direto após exclusão? |
-| P-03 | Precisão e dados temporais adicionais | Ano principal original e proibição de anos futuros estão decididos. Faltam precisão, formatos, limite inferior e armazenamento da data da edição. | Aceitar ano, ano/mês e data completa conforme seção 10.2? Como ordenar datas parciais/ausentes? Rejeitar mês/dia futuro dentro do ano corrente? Qual limite inferior e formato de entrada? Aprovar o campo separado e opcional de ano/data da edição recomendado na seção 10.3? |
-| P-04 | Incompleto | Limites de campos/links e validade específica do campo Spotify não estão definidos. | Há limites desejados? O campo Spotify deve aceitar apenas URLs de spotify.com? Links de uma mesma plataforma podem aparecer várias vezes? Os limites técnicos poderão ser propostos para aprovação antes da implementação. |
-| P-05 | Vago | Pesquisa não define correspondência, campos externos, ordenação, paginação ou tratamento de consulta vazia. | Busca local deve aceitar parte do título/artista, usando a normalização já definida? Consulta vazia mostra toda a biblioteca? Quais campos de pesquisa externa e ordenações são necessários? |
-| P-06 | Incompleto técnico | Não foram definidos validade/tamanho do cache, timeout, retries, tamanho máximo de resposta nem limites do Cover Art Archive. | Autoriza definir esses valores como configuração técnica documentada, respeitando os fornecedores e mantendo fallback manual? O contato para User-Agent também precisa ser informado antes das chamadas reais. |
-| P-07 | Retenção de imagens | Prioridade da manual, preservação na troca de edição e alternativa visual estão definidas em RF-04/RF-09. Falta decidir armazenamento das imagens. | É necessário guardar imagens localmente ou basta manter referências com imagem padrão quando indisponíveis? Como reter e incluir arquivos no backup, caso haja armazenamento local? |
-| P-08 | Critério incompleto | Metas de tempo/interações sem hardware, navegador, dataset, rede, cache, repetições, início/fim ou contagem de interação. PC e dispositivos móveis definidos como contextos obrigatórios, mas sem navegadores e viewports de teste definidos. | Qual ambiente será usado? Como contar digitação/cliques e medir carregamento? Quais navegadores e viewports de PC e celular validar, incluindo retrato e paisagem no celular? Essas definições devem ser registradas antes de declarar as metas cumpridas. |
-| P-09 | Incompleto operacional | Backup sem frequência, retenção ou preferência de destino. | Basta procedimento manual documentado, executado pelo usuário, ou existe rotina desejada? Agendamento automático não está no escopo atual. |
+| ID resolvido | Decisão aprovada | Impacto e alternativa |
+| --- | --- | --- |
+| P-01 — álbuns ambíguos e revisão de edição | Usar título/conjunto de IDs de artistas para candidatos; datas originais com intervalos sem sobreposição ajudam a distinguir álbuns comprovadamente diferentes. Para original ausente/sobreposto/coincidente, exigir confirmação de que é outro álbum e nota curta de desambiguação antes de permitir novo registro; oferecer primeiro revisão do existente. Guardar `release-group` apenas como proveniência. Na seleção, mostrar país, formato, gravadora/número de catálogo, data da edição e MBID quando disponíveis. | Evita bloqueio absoluto e fusão automática. Confirmação humana pode errar; não há garantia semântica só por metadados. Alternativa: bloquear o caso ambíguo até haver dados suficientes, impedindo parte dos cadastros legítimos. Não permitir múltiplas edições do mesmo álbum por simples confirmação de continuar. |
+| P-02 — artistas | Adotar PK estável, MBID confirmado opcional e descrição de desambiguação; exigir descrição diferenciadora ao criar homônimo. Usuário seleciona identidade existente ou cria outra explicitamente. Deduplicar o mesmo ID repetido no formulário com indicação ao usuário. Manter registros sem álbuns, ocultos da lista; URL direta mostra artista com conjunto vazio e sorteio vazio. Não adicionar ano de formação nesta etapa. | Pequeno metadado resolve casos sem ano. Exclusão automática de órfãos faria perder identidade reutilizável; ano de formação obrigatório excluiria solos/casos desconhecidos. Descrição não vira chave de unicidade. |
+| P-03 — datas | Aceitar `AAAA`, `AAAA-MM`, `AAAA-MM-DD`, anos 0001 até o corrente, componentes gregorianos válidos; rejeitar mês/dia conhecido futuro mesmo no ano corrente. Original e edição separados e opcionais. Ordenação de datas, quando usada: mais antigas primeiro pelo início do intervalo, ausentes no fim, título/ID para desempate; precisão sempre visível. | A rejeição de mês/dia futuro é extensão aprovada à regra de ano já definida. Usar intervalo só para comparação/apresentação, sem persistir componentes inventados. Campo único de ano seria mais simples, mas não distingue originais do mesmo ano. |
+| P-04 — campos e URLs | Limites: título/nome de artista 500 caracteres Unicode; desambiguação 500; plataforma 100; consulta local/externa 300; URL 2.048; até 30 artistas e 20 links adicionais por álbum; corpo de formulário 256 KiB. Contar antes de normalizar; exceder gera erro, sem truncar importação. Spotify: HTTPS com host `open.spotify.com`, sem credenciais; links adicionais HTTP/HTTPS e nomes repetidos permitidos. | Limites explícitos evitam decisões escondidas. O limite de 30 artistas pode afetar créditos extensos e foi aprovado. Restringir caminho Spotify a `/album/...` seria frágil para variações legítimas; ampliar hosts deve ser decisão explícita. |
+| P-05 — pesquisa | Busca local parcial sobre chave normalizada; vazio mostra todos. Ordenar título/ID, artistas por nome/ID, páginas de 50. Busca MusicBrainz por texto livre literal de título/artista, com escape da sintaxe de consulta, 20 edições por página e ordenação de relevância do fornecedor; não sugerir que relevância resolve identidade. | Sem linguagem de filtros ou busca avançada. Carregar detalhes somente da edição selecionada mantém o orçamento externo. |
+| P-06 — integrações | Adotar os parâmetros da seção 7 como configuração técnica documentada e ajustável, com testes dos limites e contato real no User-Agent antes de chamadas reais. | Não exigir Redis/Celery para uma instância pessoal. Sem contato configurado, informar indisponibilidade da busca e manter cadastro manual. |
+| P-07 — imagens | Guardar somente URLs manual/automática, sem upload ou download local. Imagem padrão acompanha os estáticos da aplicação. | Menos armazenamento, superfície de SSRF e complexidade de backup; sem garantia de capas offline. Download local preservaria conteúdo, mas exigiria limites binários, gestão/validação de arquivos e backup adicional. |
+| P-08 — aceitação | Adotar protocolo da seção 10 e preencher hardware, rede e navegador real do celular antes de medir. | Emulação não comprova conectividade LAN nem substitui o celular real. Os números de aceitação permanecem não demonstrados até implementação e teste. |
+| P-09 — backup | Procedimento manual e comandos locais; recomendar executar antes de migrações e após sessões de manutenção importantes. Destino escolhido pelo usuário, preferencialmente com cópia em outro dispositivo; sem agenda/limpeza automática. | Frequência e retenção continuam escolhas operacionais do proprietário; documento deve registrar que períodos sem cópia podem perder alterações. Backup apenas no mesmo disco não cobre falha desse disco. |
 
-### 10.1 Avaliação de artistas homônimos — proposta T/P-02
+### 10.1 Identidade e revisão (P-01/P-02)
 
-O ano de formação pode ajudar a diferenciar bandas ou grupos, mas não é uma chave suficiente: pode ser desconhecido, aproximado ou coincidente entre homônimos, além de haver dissoluções e reformações. Para artistas solo, formação não tem o mesmo significado; nascimento e início de carreira são dados diferentes e não devem ser convertidos automaticamente em “formação”. Torná-lo obrigatório impediria cadastros legítimos.
+Equivalência textual gera candidatos, sem fusão automática. Para artistas, usar identidade local estável, MBID confirmado opcional e descrição diferenciadora obrigatória na criação de homônimo; não incluir ano de formação no MVP. Selecionar identidade existente ou criar outra explicitamente. Deduplicar IDs repetidos no formulário com indicação ao usuário. Artistas sem álbuns permanecem armazenados e acessíveis diretamente com conjunto vazio, mas ocultos da lista.
 
-Recomenda-se um identificador local estável para cada artista, independente do nome e das datas, com identificador externo quando disponível e confirmado, e uma descrição curta de desambiguação revisada pelo usuário (por exemplo, tipo de artista, país ou cidade e período de atividade). Ano de formação seria metadado opcional apenas quando aplicável; início de carreira ou nascimento, se desejados, exigem definição própria. A descrição deve permitir distinguir as opções na seleção e na listagem. Nome normalizado igual gera candidatos para seleção/revisão, sem fusão automática. Se faltarem dados externos e datas, permitir distinguir manualmente dois artistas por essa descrição é a alternativa recomendada. A obrigatoriedade da descrição nos casos ambíguos e os metadados oferecidos ainda precisam de confirmação.
+Para álbuns com datas originais ausentes, sobrepostas ou coincidentes, oferecer primeiro revisão do existente; um novo registro requer confirmação de que é um álbum distinto e nota de desambiguação. Essa confirmação não autoriza duas edições do mesmo álbum. Guardar release-group somente como proveniência opcional. Na revisão externa, apresentar país, formato, gravadora/número de catálogo, data da edição e MBID quando disponíveis. Não exigir esses dados no cadastro manual.
 
-Após aprovação, verificar homônimos com anos diferentes, iguais e ausentes, artista solo sem formação e associação de cada álbum ao artista correto. Até lá, normalização textual não equivale a identidade confirmada.
+### 10.2 Datas e precisão (P-03)
 
-### 10.2 Avaliação de datas parciais — proposta T/P-01/P-03
+Aceitar entrada `AAAA`, `AAAA-MM` e `AAAA-MM-DD`, ou ausência, para original e edição em campos separados. Usar anos de 0001 até o corrente e calendário gregoriano válido. Não admitir mês/dia sem ano nem dia sem mês. Rejeitar componente conhecido futuro: ano posterior ao corrente, ano/mês posterior ao mês corrente ou data completa posterior à data local da gravação. Não exigir os componentes desconhecidos nem inventar janeiro ou dia 1.
 
-Recomenda-se suportar ano (`AAAA`), ano e mês (`AAAA-MM`) e data completa (`AAAA-MM-DD`), registrando explicitamente a precisão. Isso evita inventar janeiro ou o dia 1 quando apenas o ano/mês é conhecido. Os formatos aqui são propostas de representação, não uma decisão de interface ou armazenamento físico. Ausência total permanece permitida; não admitir mês/dia sem ano nem dia sem mês.
+Persistir os componentes presentes; derivar a precisão. Para comparação, datas parciais representam intervalos: `1990` e `1990-05` se sobrepõem; `1990-05` e `1990-06` não. Intervalos não sobrepostos ajudam a distinguir álbuns comprovadamente diferentes; datas não comprovam identidade sozinhas. Quando houver ordenação por data, usar início do intervalo, mais antigas primeiro, ausentes por último e título normalizado/ID como desempate. O padrão da biblioteca continua título/ID, conforme P-05.
 
-- **Validação proposta:** validar apenas os componentes presentes; mês entre 1 e 12 e dia válido para o mês/ano, incluindo anos bissextos. Aplicar a proibição já confirmada de ano futuro em qualquer precisão. Rejeitar mês ou dia futuro dentro do ano corrente é uma extensão a confirmar; a decisão sobre anos futuros não resolve esse ponto.
-- **Ordenação proposta:** comparar o início do intervalo possível para obter uma ordem de apresentação, mantendo a precisão visível e usando título normalizado e identificador local como desempate; colocar datas ausentes por último. Esses valores de ordenação não seriam datas persistidas como se fossem exatas. Confirmar essa convenção e a direção da ordenação em P-03/P-05; outra alternativa é agrupar por ano e sinalizar a ordem desconhecida dentro dele.
-- **Identificação proposta:** tratar cada data parcial como intervalo possível. `1990` e `2005` não se sobrepõem e podem diferenciar álbuns distintos; `1990` e `1990-05` se sobrepõem e não comprovam diferença; `1990-05` e `1990-06` não se sobrepõem. Intervalos sobrepostos, data ausente ou mesma data completa exigem revisão e eventual desambiguação adicional conforme P-01. A data, mesmo completa, não comprova sozinha que dois registros são o mesmo álbum.
+### 10.3 Aceitação adicional obrigatória
 
-Somente após aprovação, acrescentar casos de aceitação para ano isolado, ano/mês, data completa, ano bissexto, componentes inválidos, ordenação com precisão mista e colisões com intervalos sobrepostos. Não exigir dia e mês conhecidos para todo cadastro apenas porque a data auxilia a identificação.
+- CA-10.8: com título e artistas equivalentes e data ausente, sobreposta ou coincidente, exigir revisão; novo álbum distinto só é salvo com confirmação e nota. Cancelamento ou nota ausente não cria registro; escolher reedição atualiza o existente.
+- CA-10.9: testar intervalos sobrepostos (`1990`/`1990-05`) e não sobrepostos (`1990-05`/`1990-06`), sem presumir identidade automaticamente.
+- CA-06.5: criar artistas homônimos com descrições diferenciadoras, associar álbuns às identidades corretas e recusar criação de homônimo sem descrição. Repetir o mesmo ID não duplica vínculo ou peso e gera indicação ao usuário.
+- CA-06.6: após remover o último vínculo, preservar a identidade; URL direta mostra conjunto vazio, sorteio não retorna outro artista e a lista omite esse artista.
+- CA-01.7: aceitar ano, ano/mês, data completa e ausência, mantendo precisão; validar ano bissexto, calendário, ano zero e componentes ausentes inválidos. Com relógio controlado, rejeitar ano, mês ou dia conhecido futuro em original e edição.
+- CA-05.5: verificar ordenação por data com precisões mistas, ausentes por último e desempates estáveis, sem persistir componentes artificiais.
+- CA-09.7: salvar e trocar edição com data própria opcional; conservar original independente e revisar separadamente a data da edição.
+- CA-07.5: busca parcial normalizada por título ou artista não duplica colaboração; consulta vazia mostra todos, com ordenação e paginação de P-05.
+- CA-12.6: verificar limites de P-04 nos valores exatos e acima deles, protocolos proibidos, Spotify HTTPS em `open.spotify.com` sem credenciais e nomes de plataformas repetidos permitidos; erros não truncam nem gravam parcialmente.
 
-### 10.3 Avaliação do ano/data da edição — proposta T/P-03
+### 10.4 Dados operacionais a preencher
 
-Vale a pena armazenar separadamente, de forma opcional, o ano ou a data da edição escolhida: ajuda a reconhecer uma reedição, conferir a seleção externa e explicar por que a edição de 2020 tem ano principal 1990. Esse dado acompanha a troca de edição após revisão e não participa da distinção entre álbuns conceituais nem substitui o original desconhecido. Seu armazenamento e a precisão aceita dependem de confirmação; não se cria um segundo álbum para preservar uma edição anterior. Um identificador externo de edição, por si só, também não prova que se trata de outro álbum. Para resolver P-01, pode-se avaliar um identificador externo no nível do álbum, distinto do identificador da edição, ou uma nota manual de desambiguação; a escolha permanece pendente.
+- **Antes de chamadas reais:** configurar contato real no User-Agent; sem contato, busca externa informa indisponibilidade e cadastro manual funciona. Testes simulados e implementação podem prosseguir.
+- **Antes de declarar metas cumpridas:** registrar hardware, SO, versões, rede e navegador/modelo do celular real; gerar dataset reproduzível com 1.000 álbuns. Adotar o protocolo da seção 10 da arquitetura, incluindo 30 medições por operação e testes no celular real. Aprovar o protocolo não comprova os resultados.
+- **Antes do uso com dados reais:** escolher destino do backup. Usar comandos manuais, recomendar cópia antes de migrações e após manutenção importante, sem agendamento ou limpeza automática. Frequência e retenção ficam sob responsabilidade do proprietário; períodos sem cópia podem perder alterações.
 
-**Tensões a observar:**
+Não há decisão de produto ou arquitetura bloqueando a implementação do MVP local. Publicação continua fora do escopo e requer decisões próprias.
 
-- Revisão de “possível duplicado” não prova identidade de um álbum; bloqueio absoluto por título/artistas pode impedir um caso legítimo de homônimo. A data original resolve os casos distinguíveis; P-01/P-03 tratam dados insuficientes/coincidentes sem introduzir múltiplas edições do mesmo álbum.
-- A independência das APIs vale para metadados e sorteio; não promete streaming ou imagens remotas offline. Guardar imagens locais seria uma decisão adicional de retenção, ainda pendente.
-- Meta de dois segundos não inclui consultas externas. O controle de taxa pode impor espera em pesquisas externas e não contradiz essa meta.
-- Uso pessoal não torna seguro publicar sem autenticação. Publicação continua condicionada às decisões e alterações previstas no escopo.
-
-## 11. Rastreabilidade e condição para aprovação
+## 11. Rastreabilidade e estado de aprovação
 
 | Item do escopo | Requisitos principais |
 | --- | --- |
@@ -482,7 +485,7 @@ Vale a pena armazenar separadamente, de forma opcional, o ano ou a data da ediç
 | Campos obrigatórios/opcionais e colaboração | Seção 2, RF-01, RF-06, RN-02–03. |
 | Capas e imagem padrão | DEC-11, RF-04, RN-15, INT-02; P-07 apenas para retenção. |
 | Identificação, nomes e datas de lançamento | DEC-06–07/09–10, seções 2.1–2.3, RF-09–10, RN-14, P-01–03. |
-| Artistas visíveis e homônimos | DEC-08, RF-06, RN-16; proposta 10.1/P-02. |
+| Artistas visíveis e homônimos | DEC-08, RF-06, RN-16; decisão 10.1/P-02. |
 | Edição, remoção e revisão de duplicado | RF-08–11, RN-04–07, RN-11. |
 | Biblioteca, artista, detalhes e pesquisa | RF-05–07. |
 | Spotify e links adicionais | RF-12, SEG-04/07. |
@@ -495,6 +498,4 @@ Vale a pena armazenar separadamente, de forma opcional, o ano ou a data da ediç
 | Metas de uso e desempenho | RNF-02/04/05, P-08. |
 | Segurança aplicável | Seção 7; publicação fora do MVP. |
 
-A aprovação deve indicar se aceita as propostas T e resolver ou adiar explicitamente as pendências P-01–09, com seus impactos. Adiar não autoriza implementar uma alternativa silenciosamente. Os critérios bloqueados por uma pendência continuam incompletos até sua definição; os demais podem ser avaliados como descritos.
-
-Este documento não constitui implementação, plano de publicação nem autorização para iniciar código. A próxima etapa aguarda aprovação do usuário.
+Requisitos T e resoluções P-01–09 aprovados em 14/10/2026 por delegação do usuário, em conjunto com a arquitetura. Os critérios estão definidos para implementação e verificação; nenhum resultado de teste é declarado. Os dados operacionais da seção 10.4 devem ser preenchidos antes das respectivas atividades. Esta revisão realiza a aprovação documental, sem implementar ou publicar a aplicação.
