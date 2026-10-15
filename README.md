@@ -136,4 +136,4 @@ O arquivo de desenvolvimento inclui `-c requirements.txt`, garantindo as mesmas 
 
 A [CI do GitHub Actions](.github/workflows/ci.yml) executa em push/pull request com Python de `.python-version`, instalação com hashes, os mesmos checks locais e artefatos de cobertura. O segredo de testes é efêmero; não exige segredo no GitHub. Nenhuma publicação/deploy é configurada. O workflow remoto só pode ter resultado após ser executado no GitHub.
 
-As evidências e limitações desta preparação estão em [docs/acceptance.md](docs/acceptance.md). O aceite funcional do MVP continua pendente.
+As evidências e limitações desta preparação estão em [docs/acceptance.md](docs/acceptance.md). A [BL-001 foi verificada em checkout limpo](docs/acceptance.md#bl-001--fundação-validada-em-checkout-limpo), com instalação em `venv` novo e execução dos checks completos. As demais tarefas e o aceite funcional do MVP continuam pendentes.

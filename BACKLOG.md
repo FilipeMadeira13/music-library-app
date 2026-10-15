@@ -1,6 +1,6 @@
 # Backlog de desenvolvimento — biblioteca pessoal de álbuns
 
-**Data:** 15/10/2026. **Estado:** planejado; nenhuma tarefa implementada ou validada nesta etapa.
+**Data:** 15/10/2026. **Estado:** BL-001 concluída e verificada; BL-002–BL-062 permanecem planejadas. O aceite do MVP continua pendente.
 
 Fontes aprovadas: [escopo](PROJECT_SCOPE.md), [requisitos](REQUIREMENTS.md) e [arquitetura](ARCHITECTURE.md), incluindo decisões DEC/T, P-01–09 e ADR-01–11 aprovadas em 14/10/2026. As referências RF, CA, RN, RNF, SEG, INT e P abaixo pertencem a REQUIREMENTS.md; seções arquiteturais e ADR pertencem a ARCHITECTURE.md. Não há necessidade de reabrir decisões aprovadas.
 
@@ -29,6 +29,7 @@ Fontes aprovadas: [escopo](PROJECT_SCOPE.md), [requisitos](REQUIREMENTS.md) e [a
 
 ### BL-001 — Criar projeto e ambiente reproduzível
 
+- **Estado:** concluída em 15/10/2026, após aprovação explícita do usuário nesta sessão. Fundação existente validada em checkout limpo, sem alterações de código; D0 e comandos em [docs/acceptance.md](docs/acceptance.md#bl-001--fundação-validada-em-checkout-limpo).
 - **Objetivo:** preparar Python 3.13, Django 5.2 LTS, projeto `config`, app `library` e runner nativo de testes.
 - **Requisitos relacionados:** RNF-01; arquitetura §§2–4; ADR-01/03/10.
 - **Dependências:** nenhuma.
