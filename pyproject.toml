@@ -1,0 +1,31 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [".python"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+
+[tool.mypy]
+python_version = "3.13"
+files = ["config", "library", "manage.py", "scripts"]
+strict = true
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.coverage.run]
+branch = true
+sigterm = true
+patch = ["subprocess"]
+source = ["config", "library"]
+omit = ["*/tests/*", "*/migrations/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+# Sem meta artificial na fundação: revisar cobertura dos comportamentos por tarefa.
+
+[tool.coverage.xml]
+output = "coverage.xml"

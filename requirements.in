@@ -1,0 +1,7 @@
+# Execução: manter Django na linha LTS aprovada.
+Django>=5.2.18,<5.3
+httpx>=0.28,<0.29
+waitress>=3.0.2,<4
+whitenoise>=6.12,<7
+# Incluído em todos os SOs para disponibilizar America/Fortaleza no Windows.
+tzdata

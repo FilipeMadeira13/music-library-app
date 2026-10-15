@@ -1,0 +1,8 @@
+-c requirements.txt
+-r requirements.in
+coverage
+ruff
+mypy
+django-stubs>=5.2,<5.3
+playwright
+pip-tools
