@@ -6,6 +6,7 @@ Siga o README para instalar, configurar e iniciar. A preparação entrega soment
 
 - Mantenha banco, `.env` e backups acessíveis apenas ao proprietário. Em sistemas Unix, use `umask 077` antes de criar dados, diretórios com modo 700 e `.env` com modo 600. No Windows, ajuste permissões equivalentes.
 - `var/` é ignorada pelo Git; WhiteNoise serve exclusivamente `var/static/`. Nunca copie dados privados para os estáticos. Um caminho alternativo de banco deve continuar privado, em disco local, fora de `STATIC_ROOT` e de pastas sincronizadas/de rede.
+- A inicialização recusa `LIBRARY_DATABASE_PATH` na árvore de estáticos, inclusive subpastas, `..` e links simbólicos para essa árvore. Isso não detecta pastas sincronizadas/de rede nem aplica permissões: confira o destino escolhido e proteja também arquivos existentes (modo 600) e seus diretórios (700). Mantenha `umask 077` no shell de execução. Backups continuam em destino privado separado dos estáticos; não crie links para banco, `.env` ou backups dentro de `var/static`.
 - Execute `python scripts/diagnostics.py` para registrar Python, SQLite e Django. `python manage.py check` valida a configuração; `bash scripts/check.sh` verifica a fundação inteira. Não imprima o ambiente ou o segredo nos logs.
 - O segredo deve permanecer estável nas execuções normais. O segredo gerado pelo script de verificações é temporário e só atende testes.
 
