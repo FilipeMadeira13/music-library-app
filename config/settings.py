@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_ROOT = BASE_DIR / "var" / "static"
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5:
@@ -74,10 +75,17 @@ TEMPLATES = [
 _database_path = os.environ.get("LIBRARY_DATABASE_PATH", "")
 if _database_path and not Path(_database_path).is_absolute():
     raise ImproperlyConfigured("LIBRARY_DATABASE_PATH deve ser um caminho absoluto local.")
+_database_location = (
+    Path(_database_path) if _database_path else BASE_DIR / "var" / "library.sqlite3"
+)
+if _database_location.is_relative_to(STATIC_ROOT) or _database_location.resolve().is_relative_to(
+    STATIC_ROOT.resolve()
+):
+    raise ImproperlyConfigured("LIBRARY_DATABASE_PATH deve ficar fora dos arquivos estáticos.")
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": Path(_database_path) if _database_path else BASE_DIR / "var" / "library.sqlite3",
+        "NAME": _database_location,
         "ATOMIC_REQUESTS": False,
         "OPTIONS": {"transaction_mode": "IMMEDIATE", "timeout": 3},
     },
@@ -93,7 +101,6 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "var" / "static"
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},

@@ -21,6 +21,7 @@ python3.13 -m venv .venv
 source .venv/bin/activate
 python --version
 python -m pip install --require-hashes -r requirements-dev.txt
+umask 077
 install -d -m 700 var var/backups var/static
 cp .env.example .env
 chmod 600 .env
@@ -50,10 +51,12 @@ Para instalar só execução, use `python -m pip install --require-hashes -r req
 | `DJANGO_ALLOWED_HOSTS` | `127.0.0.1,localhost`; lista separada por vírgulas de hosts/IPs específicos, sem curingas. |
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | Vazia; quando necessária, lista de origens completas específicas, incluindo esquema e porta. |
 | `DJANGO_TIME_ZONE` | `America/Fortaleza`; fuso IANA válido. |
-| `LIBRARY_DATABASE_PATH` | Vazia usa `var/library.sqlite3`; alternativa exige caminho absoluto em disco local privado. |
+| `LIBRARY_DATABASE_PATH` | Vazia usa `var/library.sqlite3`; alternativa exige caminho absoluto em disco local privado, fora de `var/static`, inclusive via link simbólico. |
 | `MUSICBRAINZ_CONTACT` | Reservada para a futura integração, ainda não implementada. Preencher contato real antes de chamadas reais. |
 
 `.env`, ambientes virtuais, banco, backups, caches e relatórios ficam fora do Git. `.env.example` contém somente exemplos, sem segredo. SQLite usa transações `IMMEDIATE`, timeout de 3 segundos e `ATOMIC_REQUESTS=False`. CSRF e autoescape permanecem ativos.
+
+A inicialização recusa banco na árvore dos estáticos, também em subpastas ou por caminho com `..`/link simbólico. A escolha de disco local sem sincronização/rede e a proteção das permissões continuam sob responsabilidade do proprietário; a configuração não detecta esses tipos de armazenamento nem ajusta permissões automaticamente. Mantenha `umask 077` também no shell que iniciar o servidor e criar backups; proteja arquivos privados já existentes com modo 600 e diretórios com modo 700 (ou permissões equivalentes no Windows). O journal padrão é preservado, sem exigir WAL.
 
 ## Execução
 
@@ -136,4 +139,4 @@ O arquivo de desenvolvimento inclui `-c requirements.txt`, garantindo as mesmas 
 
 A [CI do GitHub Actions](.github/workflows/ci.yml) executa em push/pull request com Python de `.python-version`, instalação com hashes, os mesmos checks locais e artefatos de cobertura. O segredo de testes é efêmero; não exige segredo no GitHub. Nenhuma publicação/deploy é configurada. O workflow remoto só pode ter resultado após ser executado no GitHub.
 
-As evidências e limitações desta preparação estão em [docs/acceptance.md](docs/acceptance.md). A [BL-001 foi verificada em checkout limpo](docs/acceptance.md#bl-001--fundação-validada-em-checkout-limpo), com instalação em `venv` novo e execução dos checks completos. As demais tarefas e o aceite funcional do MVP continuam pendentes.
+As evidências e limitações desta preparação estão em [docs/acceptance.md](docs/acceptance.md). A [BL-001 foi verificada em checkout limpo](docs/acceptance.md#bl-001--fundação-validada-em-checkout-limpo), com instalação em `venv` novo e execução dos checks completos. A [BL-002 verificou configuração local e arquivos privados](docs/acceptance.md#bl-002--configuração-local-e-arquivos-privados), incluindo recusa de banco na árvore de estáticos. As demais tarefas e o aceite funcional do MVP continuam pendentes.

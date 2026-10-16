@@ -101,3 +101,65 @@ O teste existente `EnvironmentTests.test_library_loads_without_business_models` 
 **Cobertura e limites:** relatórios combinados de ambos os checks: 99%, 58 instruções e 12 ramos, com um ramo parcial na iteração de origens CSRF (`config/settings.py`, `38->36`). O aviso `no-data-collected` veio do processo auxiliar do smoke; WSGI foi medido no filho, com 100%. Não há lacuna no carregamento do app identificada por esse ramo, nem conclusão de BL-002. A porcentagem não comprova requisitos funcionais. Sem fluxos de navegador nesta tarefa, Playwright/Chromium/Firefox não foram executados/instalados. CI remota, catálogos reais, backup, celular/LAN e medições de uso/desempenho continuam não executados nesta tarefa.
 
 **Encerramento de D0:** critérios de BL-001 comprovados, checks e regressões aplicáveis aprovados, escopo arquitetural preservado e evidências registradas. Alterados somente `BACKLOG.md`, `README.md` e este registro; sem commit, push ou publicação. A tarefa encerra aqui, sem avançar para BL-002 e sem declarar o MVP aceito.
+
+## BL-002 — Configuração local e arquivos privados
+
+**Data:** 15/10/2026, America/Fortaleza. **Aprovação:** resposta explícita “sim” do usuário à execução da BL-002 nesta sessão. **Estado:** concluída; aceite do MVP pendente. Base `ffbe696` com alterações locais desta tarefa, sem commit. Ambiente Linux x86_64, Python 3.13.16, SQLite 3.45.1 e Django 5.2.18, `.venv` existente. Nenhuma dependência alterada.
+
+**Rastreabilidade:** RNF-01/09; SEG-01/08/09; arquitetura §§3/6.2/8; ADR-02/08. Não há RF/CA/RN de negócio implementado nesta tarefa. P-01–09 e ADR-01–11 preservados. BL-001 já concluída; nenhuma outra tarefa executada.
+
+### Comportamento e ciclo Red → Green → Refactor
+
+A fundação já tinha segredo externo obrigatório, fuso configurável com padrão `America/Fortaleza`, hosts explícitos sem curingas, configuração SQLite IMMEDIATE/timeout 3 s/`ATOMIC_REQUESTS=False`, `.gitignore`, `.env.example` sem segredo e instruções de proteção local. Esses comportamentos foram verificados, sem fabricar Red.
+
+A lacuna encontrada foi aceitar `LIBRARY_DATABASE_PATH` dentro de `STATIC_ROOT`, contrariando SEG-08. Agora a inicialização lança `ImproperlyConfigured` com mensagem sem ecoar o caminho. A guarda verifica tanto a árvore informada quanto o destino resolvido, cobrindo subpastas, `..` e links simbólicos.
+
+Comandos dos testes, após ativar `.venv` (segredo de teste efêmero gerado no ambiente, sem imprimir seu valor):
+
+```bash
+source .venv/bin/activate
+export DJANGO_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(64))')"
+python manage.py test library.tests.test_configuration.ConfigurationTests.test_database_inside_static_root_is_rejected --verbosity 2
+python manage.py test library.tests.test_configuration library.tests.test_environment --verbosity 2
+```
+
+| Etapa | Resultado esperado e observado |
+| --- | --- |
+| Red, antes de alterar settings | Primeiro comando: saída 1, um teste com dois subcasos falhando em `assertNotEqual(result.returncode, 0)`, pois a configuração aceitava banco direto nos estáticos e em subpasta (`0 == 0`). Falha do comportamento, sem conexão ao banco. |
+| Green, após guarda de caminhos | Segundo comando: saída 0, cinco testes aprovados em 2,747 s, incluindo o mesmo teste do Red. |
+| Extremos e configurações existentes | Segundo comando novamente: saída 0, dez testes aprovados em 3,043 s. Acrescentados raiz dos estáticos, `..`, link simbólico temporário, pasta irmã `static-private`, defaults isolados do ambiente, configuração explícita válida e segredos inválidos. Esses casos passaram de primeira; não representam novos ciclos Red. |
+| Refactor/verificação | `STATIC_ROOT` definido antes da guarda e caminho do banco compartilhado entre validação e backend; sem necessidade de abstração adicional. Ruff format ajustou quebra de linha. Checks completos após a formatação aprovaram os dez testes e demais regressões. |
+
+Seis testes novos em `library/tests/test_configuration.py`, com `SimpleTestCase` e subprocessos de ambiente controlado. O snapshot emitido pelos subprocessos contém somente configurações selecionadas, nunca o segredo. Os quatro testes existentes foram preservados e executados, incluindo os ambientes inválidos e respostas HTTP privadas. Nenhum teste abriu biblioteca ou backup real; links simbólicos usam diretório temporário e apontam para a árvore pública sem criar banco nela.
+
+### Privacidade e checks finais
+
+Verificação reproduzível do Git executada via `subprocess.run`, com asserções de retorno/conteúdo:
+
+```bash
+git check-ignore --no-index --stdin <<'PATHS'
+.env
+.env.local
+var/library.sqlite3
+var/library.sqlite3-journal
+var/backups/copy.sqlite3
+var/backups/snapshot.backup
+private/library.db
+private/library.db-wal
+PATHS
+git ls-files -ci --exclude-standard
+git ls-files --error-unmatch .env.example
+git check-ignore --no-index .env.example
+```
+
+**Aprovado:** os oito caminhos privados foram ignorados; nenhum arquivo ignorado estava rastreado; `.env.example` estava rastreado e não ignorado (último comando retorna 1, esperado). Leitura somente de `.env.example` confirmou a linha `DJANGO_SECRET_KEY=` vazia. Nenhum segredo real foi lido/exibido. README e operação agora explicitam `umask 077`, modos 600/700, restrição de destino e limites da validação automática.
+
+| Verificação | Resultado observado |
+| --- | --- |
+| `source .venv/bin/activate` e `bash scripts/check.sh` no sandbox | Interrompido com saída 1 no smoke: `PermissionError` ao criar socket. Antes disso, dependências, Ruff, 35 arquivos formatados, mypy estrito (26 arquivos), checks Django, migrações, dez testes (6,264 s) e collectstatic passaram. Não é Red. |
+| Mesmo comando fora do sandbox, após autorização | **Aprovado**, saída 0: todas as etapas, dez testes em 6,146 s, sem uso de banco pelo runner, nenhuma migração pendente, collectstatic com zero assets e smoke Waitress real (loopback, quatro threads, `DEBUG=False`, 404 sem traceback e URLs privadas inacessíveis). Diagnóstico confirmou versões acima. |
+| Cobertura combinada | 100% no recorte atual: 61 instruções, 14 ramos; nenhum ramo parcial em settings. Relatórios locais XML/HTML. O aviso `no-data-collected` do auxiliar do smoke não impediu a coleta WSGI no filho nem a conclusão dos checks. Percentual não comprova aceite funcional. |
+
+**Limites:** não há detecção automática de armazenamento em rede/pasta sincronizada, imposição de permissões nem proteção contra um operador copiar ou criar links para arquivos privados nos estáticos. Essas responsabilidades estão documentadas. Journal padrão preservado, sem WAL obrigatório. Nenhum fluxo de navegador mudou; Playwright não foi executado. CI remota, contato externo, backup real, celular/LAN e medições continuam não executados nesta tarefa. Instalação limpa não foi repetida: dependências inalteradas, evidência própria na BL-001. Nenhum impedimento restante para BL-002.
+
+**Arquivos alterados:** `config/settings.py`, `library/tests/test_configuration.py` (novo), `.env.example`, `README.md`, `docs/operations.md`, `BACKLOG.md` e este registro. D0 de BL-002 atendido com verificações aplicáveis aprovadas; nenhuma funcionalidade de negócio, commit, push ou publicação. A execução encerra nesta tarefa.

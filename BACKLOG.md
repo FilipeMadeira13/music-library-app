@@ -1,6 +1,6 @@
 # Backlog de desenvolvimento — biblioteca pessoal de álbuns
 
-**Data:** 15/10/2026. **Estado:** BL-001 concluída e verificada; BL-002–BL-062 permanecem planejadas. O aceite do MVP continua pendente.
+**Data:** 15/10/2026. **Estado:** BL-001 e BL-002 concluídas e verificadas; BL-003–BL-062 permanecem planejadas. O aceite do MVP continua pendente.
 
 Fontes aprovadas: [escopo](PROJECT_SCOPE.md), [requisitos](REQUIREMENTS.md) e [arquitetura](ARCHITECTURE.md), incluindo decisões DEC/T, P-01–09 e ADR-01–11 aprovadas em 14/10/2026. As referências RF, CA, RN, RNF, SEG, INT e P abaixo pertencem a REQUIREMENTS.md; seções arquiteturais e ADR pertencem a ARCHITECTURE.md. Não há necessidade de reabrir decisões aprovadas.
 
@@ -40,6 +40,7 @@ Fontes aprovadas: [escopo](PROJECT_SCOPE.md), [requisitos](REQUIREMENTS.md) e [a
 
 ### BL-002 — Configurar ambiente local e arquivos privados
 
+- **Estado:** concluída em 15/10/2026, após aprovação explícita do usuário nesta sessão. Configuração privada verificada e banco na árvore de estáticos recusado; D0 e evidências Red/Green em [docs/acceptance.md](docs/acceptance.md#bl-002--configuração-local-e-arquivos-privados).
 - **Objetivo:** definir configuração explícita, segredo externo, SQLite privado e fuso local.
 - **Requisitos relacionados:** RNF-01/09; SEG-01/08/09; arquitetura §§3/6.2/8; ADR-02/08.
 - **Dependências:** BL-001.
