@@ -1,6 +1,6 @@
 # Backlog de desenvolvimento — biblioteca pessoal de álbuns
 
-**Data:** 15/10/2026. **Estado:** BL-001 e BL-002 concluídas e verificadas; BL-003–BL-062 permanecem planejadas. O aceite do MVP continua pendente.
+**Data:** 16/10/2026. **Estado:** BL-001–BL-003 concluídas e verificadas; BL-004–BL-062 permanecem planejadas. O aceite do MVP continua pendente.
 
 Fontes aprovadas: [escopo](PROJECT_SCOPE.md), [requisitos](REQUIREMENTS.md) e [arquitetura](ARCHITECTURE.md), incluindo decisões DEC/T, P-01–09 e ADR-01–11 aprovadas em 14/10/2026. As referências RF, CA, RN, RNF, SEG, INT e P abaixo pertencem a REQUIREMENTS.md; seções arquiteturais e ADR pertencem a ARCHITECTURE.md. Não há necessidade de reabrir decisões aprovadas.
 
@@ -51,6 +51,7 @@ Fontes aprovadas: [escopo](PROJECT_SCOPE.md), [requisitos](REQUIREMENTS.md) e [a
 
 ### BL-003 — Normalizar títulos e nomes
 
+- **Estado:** concluída em 16/10/2026, após solicitação do usuário para executar a próxima tarefa. Função pura e validação de chave vazia verificadas por TDD; D0 e evidências em [docs/acceptance.md](docs/acceptance.md#bl-003--normalização-de-títulos-e-nomes).
 - **Objetivo:** implementar uma função pura de chave textual compartilhada, mantendo a grafia de exibição.
 - **Requisitos relacionados:** §2.1; DEC-07; RF-07/10; SEG-03; arquitetura §6.1.
 - **Dependências:** BL-001.
