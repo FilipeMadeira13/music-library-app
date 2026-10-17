@@ -163,3 +163,38 @@ git check-ignore --no-index .env.example
 **Limites:** não há detecção automática de armazenamento em rede/pasta sincronizada, imposição de permissões nem proteção contra um operador copiar ou criar links para arquivos privados nos estáticos. Essas responsabilidades estão documentadas. Journal padrão preservado, sem WAL obrigatório. Nenhum fluxo de navegador mudou; Playwright não foi executado. CI remota, contato externo, backup real, celular/LAN e medições continuam não executados nesta tarefa. Instalação limpa não foi repetida: dependências inalteradas, evidência própria na BL-001. Nenhum impedimento restante para BL-002.
 
 **Arquivos alterados:** `config/settings.py`, `library/tests/test_configuration.py` (novo), `.env.example`, `README.md`, `docs/operations.md`, `BACKLOG.md` e este registro. D0 de BL-002 atendido com verificações aplicáveis aprovadas; nenhuma funcionalidade de negócio, commit, push ou publicação. A execução encerra nesta tarefa.
+
+## BL-003 — Normalização de títulos e nomes
+
+**Data:** 16/10/2026, America/Fortaleza. **Estado:** concluída no recorte BL-003/D0. A solicitação do usuário “Próxima do BACKLOG.md”, após BL-001/002 concluídas, autorizou esta tarefa. Branch `feat/bl003-normalizar-textos`, criada do HEAD atual de `main`; árvore inicial limpa, sem alterações preexistentes ou operações Git em andamento. A criação exigiu permissão de ferramenta porque `.git` estava somente para leitura no sandbox; criação autorizada e branch confirmada antes da primeira edição. Sem commit, push ou publicação.
+
+**Rastreabilidade:** requisitos §2.1, DEC-07, fundação de RF-07/10 e SEG-03; arquitetura §§4/6.1, ADR-05 e suíte U-TX de TEST_STRATEGY.md. As decisões P-01–09 e ADR-01–11 permanecem preservadas. Esta função não implementa busca, persistência, resolução de identidade, forms ou HTTP.
+
+`library.validation.text_key(value: str) -> str` usa NFD → casefold → NFD e remove marcas Unicode (categorias M) e caracteres reconhecidos como whitespace por `str.isspace()`. Pontuação e demais caracteres permanecem; não há transliteração nem decomposição de compatibilidade. Chave vazia lança `ValueError`. A função retorna uma chave separada; o texto de exibição continua sob responsabilidade do chamador. A consulta vazia será tratada na BL-024, sem relaxar a validação de títulos/nomes.
+
+### Evidências de TDD e refatoração
+
+Todos os comandos de teste abaixo foram executados após `source .venv/bin/activate`, com `DJANGO_SECRET_KEY` efêmero no ambiente (gerado com `secrets.token_urlsafe(64)`), sem ler/gravar segredos em arquivos:
+
+| Etapa | Comando | Resultado observado |
+| --- | --- | --- |
+| Red — equivalências | `python manage.py test library.tests.test_validation.TextKeyTests.test_equivalent_spellings_share_key_without_changing_display --verbosity 2` | Saída 1: `AttributeError` pela ausência de `text_key`, nos quatro exemplos `ÁGUA`, `agua`, ` A gua ` e Unicode decomposto. |
+| Green — equivalências | `python manage.py test library.tests.test_validation --verbosity 2` | Saída 0, um teste aprovado após implementar a transformação. |
+| Extremos + Red — chave vazia | Mesmo comando do Green | Tabela de casefold/Unicode/pontuação aprovada de primeira; rejeição de vazio falhou nos quatro subcasos com `ValueError not raised`. Três testes executados, quatro falhas esperadas no mesmo teste. |
+| Green — chave vazia e regressões | Mesmo comando do Green | Saída 0, três testes aprovados após acrescentar a guarda de chave vazia. |
+| Refactor/verificação | `python -m ruff check library/validation.py library/tests/test_validation.py` e `python -m ruff format --check library/validation.py library/tests/test_validation.py` | Ambos aprovados. Documentado o contrato; transformação pequena e legível, sem necessidade de abstração adicional. Os checks finais reexecutaram os testes. |
+
+Os três testes `SimpleTestCase` cobrem Unicode composto/decomposto, `Straße`/`STRASSE`, iota subscrito (ordem NFD antes do casefold), tabs/quebras de linha e espaços Unicode, `A B`/`AB`, pontuação, ausência de transliteração, caracteres de largura completa, marcas de classe combinante zero e zero-width space preservado. Vazio, somente whitespace, somente marcas e mistura são rejeitados. Todos executaram sem banco e sem chamadas externas; resultados esperados são literais. A tabela complementar passou de primeira e não é apresentada como novo ciclo Red.
+
+### Verificações finais e limites
+
+`source .venv/bin/activate` seguido de `bash scripts/check.sh`: primeira tentativa aprovou dependências, Ruff, mypy, Django, migrações e 13 testes, mas falhou no smoke por `PermissionError: [Errno 1] Operation not permitted` ao criar socket no sandbox. O comando completo foi repetido com permissão de ferramenta para sockets locais e terminou com saída 0:
+
+- Dependências íntegras; Ruff lint e 36 arquivos formatados; mypy estrito em 27 arquivos aprovado.
+- Django sem problemas; `makemigrations --check --dry-run` sem alterações.
+- 13 testes aprovados em 8,002 s, incluindo os três novos; banco não utilizado.
+- `collectstatic` aprovado (zero arquivos novos); smoke Waitress aprovado em loopback, quatro threads e `DEBUG=False`, com 404 e caminhos privados inacessíveis.
+- Cobertura combinada de 100% no recorte atual: 69 instruções, 16 ramos; `validation.py` com oito instruções e dois ramos, ambos exercitados. A porcentagem não demonstra aceite de RF-07/10 completos. Aviso `no-data-collected` do processo auxiliar do smoke preservado, com WSGI coletado no filho.
+- Diagnóstico: Python 3.13.16, SQLite 3.45.1 e Django 5.2.18. Dependências inalteradas; instalação limpa não repetida.
+
+**Arquivos alterados:** `library/validation.py`, `library/tests/test_validation.py` (novo), `BACKLOG.md`, `README.md` e este registro. D0 de BL-003 atendido. Sem mudanças de navegador ou modelos; Playwright não executado e nenhuma migração necessária. Nenhum impedimento restante nesta tarefa. CI remota, catálogos reais, backup real, celular/LAN e medições continuam pendentes. BL-004 e demais tarefas não executadas; MVP não aceito.
